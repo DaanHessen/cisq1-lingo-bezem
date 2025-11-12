@@ -1,0 +1,108 @@
+@startuml domain
+!pragma layout smetana
+left to right direction
+skinparam classAttributeIconSize 0
+hide stereotypes
+
+enum Mark {
+INVALID
+ABSENT
+PRESENT
+CORRECT
+}
+
+enum GameState {
+NEW
+IN_ROUND
+ELIMINATED
+}
+
+enum RoundOutcome {
+IN_PROGRESS
+WON
+LOST
+}
+
+class InvalidFeedbackException
+class InvalidActionException
+class InvalidWordException
+
+interface Dictionary {
+
+* exists(word:String): boolean
+* randomWord(length:int): String
+  }
+
+class Hint {
+
+* value:String
+
+- asString(): String
+- length(): int
+  {static} initialFor(word:String): Hint
+  {static} from(prev:Hint, target:String, marks:List<Mark>): Hint
+  }
+
+class Feedback {
+
+* attempt:String
+* marks:List<Mark>
+
+- isWordGuessed(): boolean
+- isGuessValid(): boolean
+- applyTo(prev:Hint, target:String): Hint
+  {static} of(attempt:String, marks:List<Mark>): Feedback
+  {static} correct(word:String): Feedback
+  {static} invalid(word:String): Feedback
+  {static} generate(target:String, attempt:String, dict:Dictionary): Feedback
+  }
+
+class Round {
+
+* targetWord:String
+* maxAttempts:int
+* attemptsUsed:int
+* outcome:RoundOutcome
+* history:List<Feedback>
+* currentHint:Hint
+
+- guess(attempt:String, dict:Dictionary): Feedback
+- isSolved(): boolean
+- isOver(): boolean
+- getAttemptsRemaining(): int
+- getCurrentHint(): Hint
+- revealAnswer(): String
+  }
+
+class Game {
+
+* id:UUID
+* score:int
+* state:GameState
+* currentRound:Round
+* pastRounds:List<Round>
+* lastWordLength:int
+* dictionary:Dictionary
+
+- startGame()
+- startNewRound()
+- guess(attempt:String): Feedback
+- forfeit()
+- getScore(): int
+- getCurrentHint(): Hint
+- getAttemptsRemaining(): int
+- getPastRounds(): List<Round>
+  }
+
+Feedback --> Mark
+Feedback ..> Hint
+Feedback ..> Dictionary
+Round "1" o-- "0..*" Feedback : history
+Round "1" o-- "1" Hint : currentHint
+Round --> RoundOutcome
+Round ..> Dictionary
+Game "1" o-- "0..*" Round : pastRounds
+Game "1" o-- "0..1" Round : currentRound
+Game --> GameState
+Game ..> Dictionary
+@enduml
