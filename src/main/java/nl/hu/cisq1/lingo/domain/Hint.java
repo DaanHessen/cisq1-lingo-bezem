@@ -2,9 +2,11 @@ package nl.hu.cisq1.lingo.domain;
 
 import java.util.List;
 import nl.hu.cisq1.lingo.domain.enums.Mark;
+import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@Embeddable
 @Getter
 @AllArgsConstructor
 public class Hint {
