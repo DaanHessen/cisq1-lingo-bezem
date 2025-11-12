@@ -17,12 +17,14 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Getter;
 
 @Entity
 @Table(name = "games")
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class Game {
     static final int MAX_ATTEMPTS = 5;
 

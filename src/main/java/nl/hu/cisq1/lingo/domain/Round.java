@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -21,6 +21,7 @@ import jakarta.persistence.Table;
 @Table(name = "rounds")
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class Round {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

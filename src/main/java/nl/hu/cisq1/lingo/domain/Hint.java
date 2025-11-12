@@ -4,11 +4,13 @@ import java.util.List;
 import nl.hu.cisq1.lingo.domain.enums.Mark;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Getter;
 
 @Embeddable
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class Hint {
     private String value;
 
