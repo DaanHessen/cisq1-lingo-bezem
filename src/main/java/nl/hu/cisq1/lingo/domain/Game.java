@@ -44,7 +44,7 @@ public class Game {
     @Transient
     private Dictionary dict;
 
-    private void startGame() {
+    protected void startGame() {
         if (this.state != GameState.NEW) {
             throw new InvalidActionException("🤔🤔 you're already in a game!");
         } 
@@ -57,7 +57,7 @@ public class Game {
         this.startNewRound();
     }
 
-    private void startNewRound() {
+    protected void startNewRound() {
         if (this.state == GameState.ELIMINATED) {
             throw new InvalidActionException("🤔🤔 you are dead..");
         }
@@ -83,7 +83,7 @@ public class Game {
         this.lastWordLength = nextWordLength;
     }
 
-    private Feedback guess(String attempt) {
+    protected Feedback guess(String attempt) {
         if (this.state != GameState.IN_ROUND) {
             throw new InvalidActionException("🤔🤔 why are you trying to guess without being in a round????");
         }
@@ -104,9 +104,9 @@ public class Game {
         return feedback;
     }
 
-    private void forfeit() {
+    protected void forfeit() {
         if (this.state != GameState.IN_ROUND) {
-            throw new InvalidActionException("no. you cannot forfeit when you're not even playing, fool.");
+            throw new InvalidActionException("you cannot forfeit when you're not even playing, fool.");
         }
 
         this.pastRounds.add(currentRound);
@@ -114,25 +114,25 @@ public class Game {
         this.state = GameState.ELIMINATED;
     }
 
-    private int getScore() {
+    protected int getScore() {
         return score;
     }
 
-    private Hint getCurrentHint() {
+    protected Hint getCurrentHint() {
         if (this.state != GameState.IN_ROUND) {
-            throw new InvalidActionException("??? there is no hint if there is no game.");
+            throw new InvalidActionException("??? there is no hint if there is no game??");
         }
         return currentRound.getCurrentHint();
     }
 
-    private int getAttemptsRemaining() {
+    protected int getAttemptsRemaining() {
         if (this.state != GameState.IN_ROUND) {
-            throw new InvalidActionException("I'd say your attempts remaining are 0 but you're not even playing.");
+            throw new InvalidActionException("I'd say your attempts remaining are '0' but you're not even playing.");
         }
         return currentRound.getAttemptsRemaining();
     }
 
-    private List<Round> getPastRounds() {
+    protected List<Round> getPastRounds() {
         return pastRounds;
     }
 }
