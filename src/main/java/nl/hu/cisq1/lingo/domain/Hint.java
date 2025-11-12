@@ -12,19 +12,25 @@ import lombok.Getter;
 public class Hint {
     private String value;
 
-    private String asString() {
-        return null;
-    }
-
-    private int length() {
-        return value.length();
-    }
-
     public static Hint initialFor(String word) {
-        return null;
+        String first = String.valueOf(word.charAt(0));
+
+        for (int i = 1; i < word.length(); i++) {
+            first += '.';
+        }
+        return new Hint(first);
     }
 
     public static Hint from(Hint prev, String target, List<Mark> marks) {
-        return null;
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < target.length(); i++) {
+            if (marks.get(i) == Mark.CORRECT) {
+                builder.append(target.charAt(i));
+            } else {
+                builder.append(prev.getValue().charAt(i));
+            }
+        }
+        return new Hint(builder.toString());
     }
 }

@@ -59,20 +59,18 @@ public class Feedback {
         return new Feedback(attempt, marks);
     }
     public static Feedback correct (String word) {
-        int length = word.length();
         List<Mark> marks = new ArrayList<>();
 
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < word.length(); i++) {
             marks.add(Mark.CORRECT);
         }
         return new Feedback(word, marks);
     }
 
     public static Feedback invalid(String word) {
-        int length = word.length();
         List<Mark> marks = new ArrayList<>();
 
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < word.length(); i++) {
             marks.add(Mark.INVALID);
         }
         return new Feedback(word, marks);
@@ -83,27 +81,26 @@ public class Feedback {
             return Feedback.invalid(attempt);
         }
 
-        int length = target.length();
         boolean[] used = new boolean[target.length()];
         List<Mark> marks = new ArrayList<>();
-        
-        for (int i = 0; i < length; i++) {
+
+        for (int i = 0; i < target.length(); i++) {
             marks.add(Mark.ABSENT);
         }
 
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < target.length(); i++) {
             if (attempt.charAt(i) == target.charAt(i)) {
                 used[i] = true;
                 marks.set(i, Mark.CORRECT);
             }
         }
 
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < target.length(); i++) {
             if (marks.get(i) == Mark.CORRECT) {
                 continue;
             }
 
-            for (int j = 0; j < length; j++) {
+            for (int j = 0; j < target.length(); j++) {
                 if (attempt.charAt(i) == target.charAt(j) && !used[j]) {
                     marks.set(i, Mark.PRESENT);
                     used[j] = true;
