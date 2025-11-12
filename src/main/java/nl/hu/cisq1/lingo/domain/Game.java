@@ -7,6 +7,7 @@ import nl.hu.cisq1.lingo.domain.exceptions.InvalidActionException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.UUID;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,6 +19,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.*;
 import lombok.Getter;
 
 @Entity
@@ -25,6 +27,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Slf4j
 public class Game {
     static final int MAX_ATTEMPTS = 5;
 
@@ -48,7 +51,7 @@ public class Game {
 
     protected void startGame() {
         if (this.state != GameState.NEW) {
-            throw new InvalidActionException("🤔🤔 you're already in a game!");
+            throw new InvalidActionException("game already started");
         } 
 
         this.state = GameState.NEW;
@@ -56,16 +59,17 @@ public class Game {
         this.lastWordLength = 0;
         this.pastRounds = new ArrayList<>();
 
+        log.info("started a new game");
         this.startNewRound();
     }
 
     protected void startNewRound() {
         if (this.state == GameState.ELIMINATED) {
-            throw new InvalidActionException("🤔🤔 you are dead..");
+            throw new InvalidActionException("cannot start round, game is over");
         }
         
         if (this.state == GameState.IN_ROUND) {
-            throw new InvalidActionException("🤔🤔 one round at once isn't enough for you??");
+            throw new InvalidActionException("round already in progress");
         }
 
         int nextWordLength = switch (this.lastWordLength) {
@@ -73,12 +77,14 @@ public class Game {
             case 5 -> 6;
             case 6 -> 7;
             case 7 -> 5;
-            default -> throw new IllegalStateException("🤨🤨 " + this.lastWordLength + " isn't a valid length!");
+            default -> throw new IllegalStateException("🤨🤨 " + this.lastWordLength + " isn't a valid length");
         };
 
         String target = dict.randomWord(nextWordLength);
         List<Feedback> history = new ArrayList<>();
         Hint hint = Hint.initialFor(target);
+
+        log.info("word to guess for this round: " + target);
 
         this.currentRound = new Round(target, MAX_ATTEMPTS,  0, history, RoundOutcome.IN_PROGRESS, hint);
         this.state = GameState.IN_ROUND;
@@ -87,7 +93,7 @@ public class Game {
 
     protected Feedback guess(String attempt) {
         if (this.state != GameState.IN_ROUND) {
-            throw new InvalidActionException("🤔🤔 why are you trying to guess without being in a round????");
+            throw new InvalidActionException("no active round");
         }
 
         Feedback feedback = currentRound.guess(attempt, dict);
@@ -108,7 +114,7 @@ public class Game {
 
     protected void forfeit() {
         if (this.state != GameState.IN_ROUND) {
-            throw new InvalidActionException("you cannot forfeit when you're not even playing, fool.");
+            throw new InvalidActionException("cannot forfeit when not in round");
         }
 
         this.pastRounds.add(currentRound);
@@ -122,14 +128,14 @@ public class Game {
 
     protected Hint getCurrentHint() {
         if (this.state != GameState.IN_ROUND) {
-            throw new InvalidActionException("??? there is no hint if there is no game??");
+            throw new InvalidActionException("no active round");
         }
         return currentRound.getCurrentHint();
     }
 
     protected int getAttemptsRemaining() {
         if (this.state != GameState.IN_ROUND) {
-            throw new InvalidActionException("I'd say your attempts remaining are '0' but you're not even playing.");
+            throw new InvalidActionException("no active round");
         }
         return currentRound.getAttemptsRemaining();
     }

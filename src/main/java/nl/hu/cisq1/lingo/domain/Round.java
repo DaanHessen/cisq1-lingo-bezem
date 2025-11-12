@@ -49,7 +49,7 @@ public class Round {
 
     protected Feedback guess(String attempt, Dictionary dict) {
         if (isOver()) {
-            throw new InvalidActionException("🤔cannot guess after round is over!");
+            throw new InvalidActionException("round is already over");
         }
 
         Feedback feedback = Feedback.generate(targetWord, attempt, dict);
