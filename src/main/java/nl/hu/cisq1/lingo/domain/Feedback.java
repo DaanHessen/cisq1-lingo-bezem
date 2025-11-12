@@ -51,7 +51,7 @@ public class Feedback {
         return !marks.contains(Mark.INVALID);
     }
 
-    private Hint applyTo(Hint prev, String target) {
+    protected Hint applyTo(Hint prev, String target) {
         return Hint.from(prev, target, this.marks);
     }
 

@@ -1,6 +1,7 @@
 package nl.hu.cisq1.lingo.domain;
 
 import nl.hu.cisq1.lingo.domain.enums.RoundOutcome;
+import nl.hu.cisq1.lingo.domain.exceptions.InvalidActionException;
 
 import java.util.List;
 import java.util.UUID;
@@ -34,27 +35,52 @@ public class Round {
     @Embedded
     private Hint currentHint;
 
-    private Feedback guess(String attempt, Dictionary dict) {
-        return null;
+    protected Feedback guess(String attempt, Dictionary dict) {
+        if (isOver()) {
+            throw new InvalidActionException("🤔cannot guess after round is over!");
+        }
+
+        Feedback feedback = Feedback.generate(targetWord, attempt, dict);
+        
+        if (feedback.isGuessValid()) {
+            this.currentHint = feedback.applyTo(currentHint, this.targetWord);
+        }
+
+        this.history.add(feedback);
+        this.attemptsUsed = this.attemptsUsed + 1;
+
+        if (feedback.isWordGuessed()) {
+            this.outcome = RoundOutcome.WON;
+        }
+
+        if (this.attemptsUsed >= this.maxAttempts && !this.isSolved()) {
+            this.outcome = RoundOutcome.LOST;
+        }
+
+        return feedback;
     }
 
-    private boolean isSolved() {
-        return true;
+    protected boolean isSolved() {
+        if (outcome.equals(RoundOutcome.WON)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    private boolean isOver() {
-        return false;
+    protected boolean isOver() {
+        return (outcome != RoundOutcome.IN_PROGRESS);
     }
 
-    private int getAttemptsRemaining() {
+    protected int getAttemptsRemaining() {
         return maxAttempts - attemptsUsed;
     }
 
-    private Hint getCurrentHint() {
+    protected Hint getCurrentHint() {
         return currentHint;
     }
 
-    private String revealAnswer() {
+    protected String revealAnswer() {
         return targetWord;
     }
 }
