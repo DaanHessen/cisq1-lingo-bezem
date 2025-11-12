@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -28,6 +29,16 @@ public class Round {
     private int maxAttempts;
     private int attemptsUsed;
     private RoundOutcome outcome;
+
+    public Round(String targetWord, int maxAttempts, int attemptsUsed, List<Feedback> history, RoundOutcome outcome, Hint currentHint) {
+        this.id = null;
+        this.targetWord = targetWord;
+        this.maxAttempts = maxAttempts;
+        this.attemptsUsed = attemptsUsed;
+        this.outcome = outcome;
+        this.history = history;
+        this.currentHint = currentHint;
+    }
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Feedback> history;
