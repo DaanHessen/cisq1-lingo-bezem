@@ -7,6 +7,7 @@ import nl.hu.cisq1.lingo.domain.exceptions.InvalidActionException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.Random;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -60,6 +61,10 @@ public class Game {
     }
 
     public void startNewRound(Dictionary dictionary) {
+        startNewRound(dictionary, false);
+    }
+
+    public void startNewRound(Dictionary dictionary, boolean randomLength) {
         if (this.state == GameState.ELIMINATED) {
             throw new InvalidActionException("cannot start round, game is over");
         }
@@ -68,13 +73,23 @@ public class Game {
             throw new InvalidActionException("round already in progress");
         }
 
-        int nextWordLength = switch (this.lastWordLength) {
-            case 0 -> 5;
-            case 5 -> 6;
-            case 6 -> 7;
-            case 7 -> 5;
-            default -> throw new IllegalStateException("🤨🤨 " + this.lastWordLength + " isn't a valid length");
-        };
+        if (this.currentRound != null && this.currentRound.isOver()) {
+            this.pastRounds.add(this.currentRound);
+        }
+
+        int nextWordLength;
+        if (randomLength) {
+            int[] validLengths = {5, 6, 7};
+            nextWordLength = validLengths[new Random().nextInt(validLengths.length)];
+        } else {
+            nextWordLength = switch (this.lastWordLength) {
+                case 0 -> 5;
+                case 5 -> 6;
+                case 6 -> 7;
+                case 7 -> 5;
+                default -> throw new IllegalStateException("🤨🤨 " + this.lastWordLength + " isn't a valid length");
+            };
+        }
 
         String target = dictionary.randomWord(nextWordLength);
         List<Feedback> history = new ArrayList<>();
@@ -96,12 +111,8 @@ public class Game {
 
         if (currentRound.getOutcome() == RoundOutcome.WON) {
             this.score = score + (5 * (currentRound.getAttemptsRemaining() + 1));
-            this.pastRounds.add(currentRound);
-            this.currentRound = null;
             this.state = GameState.WAITING_FOR_ROUND;
         } else if (currentRound.getOutcome() == RoundOutcome.LOST) {
-            this.pastRounds.add(currentRound);
-            this.currentRound = null;
             this.state = GameState.ELIMINATED;
         }
 
@@ -113,8 +124,6 @@ public class Game {
             throw new InvalidActionException("cannot forfeit when not in round");
         }
 
-        this.pastRounds.add(currentRound);
-        this.currentRound = null;
         this.state = GameState.ELIMINATED;
     }
 

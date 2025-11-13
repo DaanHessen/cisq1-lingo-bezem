@@ -43,9 +43,14 @@ public class GameService {
 
     @Transactional
     public GameResponse startNewRound(UUID gameId) {
+        return startNewRound(gameId, false);
+    }
+
+    @Transactional
+    public GameResponse startNewRound(UUID gameId, boolean randomLength) {
         Game game = findGameById(gameId);
 
-        game.startNewRound(dictionaryService);
+        game.startNewRound(dictionaryService, randomLength);
         game = gameRepository.save(game);
         
         return GameMapper.toGameResponse(game);
