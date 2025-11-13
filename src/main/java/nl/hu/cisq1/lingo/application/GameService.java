@@ -5,10 +5,12 @@ import nl.hu.cisq1.lingo.domain.Game;
 import nl.hu.cisq1.lingo.presentation.dto.request.GuessRequest;
 import nl.hu.cisq1.lingo.presentation.dto.response.GameResponse;
 import nl.hu.cisq1.lingo.presentation.dto.response.GuessResponse;
+import nl.hu.cisq1.lingo.presentation.dto.response.ScoreboardEntry;
 import nl.hu.cisq1.lingo.repository.GameRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -22,8 +24,9 @@ public class GameService {
     }
 
     @Transactional
-    public GameResponse startNewGame() {
+    public GameResponse startNewGame(String username) {
         Game game = new Game();
+        game.setUsername(username);
         game.startGame(dictionaryService);
 
         game = gameRepository.save(game);
@@ -70,6 +73,14 @@ public class GameService {
         gameRepository.save(game);
 
         return GameMapper.toGameResponse(game);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ScoreboardEntry> getScoreboard() {
+        return gameRepository.findTop10ByOrderByScoreDesc()
+            .stream()
+            .map(game -> new ScoreboardEntry(game.getUsername(), game.getScore()))
+            .toList();
     }
 
     private Game findGameById(UUID gameId) {

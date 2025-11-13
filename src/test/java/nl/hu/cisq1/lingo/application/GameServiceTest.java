@@ -47,7 +47,7 @@ class GameServiceTest {
         when(dictionaryService.randomWord(5)).thenReturn(WORD_5);
         when(gameRepository.save(any(Game.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        GameResponse response = gameService.startNewGame();
+        GameResponse response = gameService.startNewGame("JoeRogan");
 
         assertEquals(GameState.IN_ROUND, response.state());
         assertEquals(0, response.score());
@@ -188,7 +188,7 @@ class GameServiceTest {
 
         assertEquals(GameState.ELIMINATED, response.state());
         assertEquals(0, response.score());
-        assertNull(response.currentRound());
+        assertNotNull(response.currentRound());
         verify(gameRepository).findById(gameId);
         verify(gameRepository).save(activeGame);
     }
@@ -209,13 +209,13 @@ class GameServiceTest {
     private Game activeGame(UUID id, String targetWord) {
         Round round = new Round(targetWord, 5, 0, new ArrayList<>(), RoundOutcome.IN_PROGRESS, Hint.initialFor(targetWord));
         List<Round> pastRounds = new ArrayList<>();
-        return new Game(id, 0, GameState.IN_ROUND, round, pastRounds, targetWord.length());
+        return new Game(id, "JoeRogan", 0, GameState.IN_ROUND, round, pastRounds, targetWord.length());
     }
 
     private Game waitingGame(UUID id, int score, int lastWordLength) {
         Round finishedRound = new Round(WORD_5, 5, 1, new ArrayList<>(), RoundOutcome.WON, Hint.initialFor(WORD_5));
         List<Round> pastRounds = new ArrayList<>();
         pastRounds.add(finishedRound);
-        return new Game(id, score, GameState.WAITING_FOR_ROUND, null, pastRounds, lastWordLength);
+        return new Game(id, "JoeRogan", score, GameState.WAITING_FOR_ROUND, null, pastRounds, lastWordLength);
     }
 }

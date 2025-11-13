@@ -48,7 +48,7 @@ class GameServiceIntegrationTest {
     @Test
     @DisplayName("Starting a game persists initial five-letter round")
     void startNewGamePersistsInitialRound() {
-        GameResponse response = gameService.startNewGame();
+        GameResponse response = gameService.startNewGame("JamesMay");
 
         assertEquals(GameState.IN_ROUND, response.state());
         assertEquals(0, response.score());
@@ -65,25 +65,25 @@ class GameServiceIntegrationTest {
     @Test
     @DisplayName("Winning guess moves game to waiting state with updated score")
     void makeGuessWinningAttemptMovesGameToWaitingState() {
-        UUID gameId = gameService.startNewGame().id();
+        UUID gameId = gameService.startNewGame("JamesMay").id();
 
         GuessResponse response = gameService.makeGuess(gameId, new GuessRequest(WORD_5));
 
         assertTrue(response.feedback().correct());
         assertEquals(GameState.WAITING_FOR_ROUND, response.gameState().state());
         assertEquals(25, response.gameState().score());
-        assertNull(response.gameState().currentRound());
+        assertNotNull(response.gameState().currentRound());
 
         Game persistedGame = gameRepository.findById(gameId).orElseThrow();
         assertEquals(GameState.WAITING_FOR_ROUND, persistedGame.getState());
         assertEquals(25, persistedGame.getScore());
-        assertNull(persistedGame.getCurrentRound());
+        assertNotNull(persistedGame.getCurrentRound());
     }
 
     @Test
     @DisplayName("Starting new round after win increases word length")
     void startNewRoundAfterWinUsesNextWordLength() {
-        UUID gameId = gameService.startNewGame().id();
+        UUID gameId = gameService.startNewGame("JamesMay").id();
         gameService.makeGuess(gameId, new GuessRequest(WORD_5));
 
         GameResponse response = gameService.startNewRound(gameId);
@@ -103,24 +103,24 @@ class GameServiceIntegrationTest {
     @Test
     @DisplayName("Forfeiting an active round eliminates the player")
     void forfeitGameEliminatesPlayer() {
-        UUID gameId = gameService.startNewGame().id();
+        UUID gameId = gameService.startNewGame("JamesMay").id();
 
         GameResponse response = gameService.forfeitGame(gameId);
 
         assertEquals(GameState.ELIMINATED, response.state());
         assertEquals(0, response.score());
-        assertNull(response.currentRound());
+        assertNotNull(response.currentRound());
 
         Game persistedGame = gameRepository.findById(gameId).orElseThrow();
         assertEquals(GameState.ELIMINATED, persistedGame.getState());
         assertEquals(0, persistedGame.getScore());
-        assertNull(persistedGame.getCurrentRound());
+        assertNotNull(persistedGame.getCurrentRound());
     }
 
     @Test
     @DisplayName("Retrieving persisted game returns latest state")
     void getGameReturnsPersistedState() {
-        UUID gameId = gameService.startNewGame().id();
+        UUID gameId = gameService.startNewGame("JamesMay").id();
 
         GameResponse response = gameService.getGame(gameId);
 

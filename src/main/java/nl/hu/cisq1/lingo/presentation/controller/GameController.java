@@ -2,8 +2,10 @@ package nl.hu.cisq1.lingo.presentation.controller;
 
 import nl.hu.cisq1.lingo.application.GameService;
 import nl.hu.cisq1.lingo.presentation.dto.request.GuessRequest;
+import nl.hu.cisq1.lingo.presentation.dto.request.StartGameRequest;
 import nl.hu.cisq1.lingo.presentation.dto.response.GameResponse;
 import nl.hu.cisq1.lingo.presentation.dto.response.GuessResponse;
+import nl.hu.cisq1.lingo.presentation.dto.response.ScoreboardEntry;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -28,8 +31,8 @@ public class GameController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public GameResponse startGame() {
-        return service.startNewGame();
+    public GameResponse startGame(@RequestBody StartGameRequest request) {
+        return service.startNewGame(request.username());
     }
 
     @GetMapping("/{gameId}")
@@ -52,5 +55,10 @@ public class GameController {
     @DeleteMapping("/{gameId}")
     public GameResponse forfeitGame(@PathVariable UUID gameId) {
         return service.forfeitGame(gameId);
+    }
+
+    @GetMapping("/scoreboard")
+    public List<ScoreboardEntry> getScoreboard() {
+        return service.getScoreboard();
     }
 }

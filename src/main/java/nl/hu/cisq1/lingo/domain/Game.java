@@ -35,6 +35,7 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
+    private String username;
     private int score;
     private GameState state = GameState.NEW;
 
@@ -45,6 +46,10 @@ public class Game {
     private List<Round> pastRounds;
 
     private int lastWordLength;
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public void startGame(Dictionary dictionary) {
         if (this.state != GameState.NEW) {

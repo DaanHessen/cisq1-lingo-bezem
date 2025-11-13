@@ -27,9 +27,9 @@ class GameMapperTest {
     @DisplayName("Maps game with current round correctly")
     void mapsGameWithCurrentRound() {
         UUID gameId = UUID.randomUUID();
-        Hint hint = Hint.initialFor("appel");
-        Round round = new Round("appel", 5, 0, new ArrayList<>(), RoundOutcome.IN_PROGRESS, hint);
-        Game game = new Game(gameId, 0, GameState.IN_ROUND, round, new ArrayList<>(), 5);
+        Hint hint = Hint.initialFor("bruhh");
+        Round round = new Round("bruhh", 5, 0, new ArrayList<>(), RoundOutcome.IN_PROGRESS, hint);
+        Game game = new Game(gameId, "BeetleJuice", 0, GameState.IN_ROUND, round, new ArrayList<>(), 5);
 
         GameResponse response = GameMapper.toGameResponse(game);
 
@@ -45,7 +45,7 @@ class GameMapperTest {
     @DisplayName("Maps game without current round correctly")
     void mapsGameWithoutCurrentRound() {
         UUID gameId = UUID.randomUUID();
-        Game game = new Game(gameId, 25, GameState.WAITING_FOR_ROUND, null, new ArrayList<>(), 5);
+        Game game = new Game(gameId, "BeetleJuice", 25, GameState.WAITING_FOR_ROUND, null, new ArrayList<>(), 5);
 
         GameResponse response = GameMapper.toGameResponse(game);
 
@@ -61,7 +61,7 @@ class GameMapperTest {
     @DisplayName("Maps eliminated game correctly")
     void mapsEliminatedGame() {
         UUID gameId = UUID.randomUUID();
-        Game game = new Game(gameId, 0, GameState.ELIMINATED, null, new ArrayList<>(), 5);
+        Game game = new Game(gameId, "BeetleJuice", 0, GameState.ELIMINATED, null, new ArrayList<>(), 5);
 
         GameResponse response = GameMapper.toGameResponse(game);
 
@@ -73,11 +73,11 @@ class GameMapperTest {
     @Test
     @DisplayName("Maps round with attempts correctly")
     void mapsRoundWithAttempts() {
-        Hint hint = Hint.initialFor("appel");
+        Hint hint = Hint.initialFor("bruhh");
         List<Feedback> history = List.of(
             Feedback.of("wrong", List.of(Mark.ABSENT, Mark.CORRECT, Mark.ABSENT, Mark.ABSENT, Mark.ABSENT))
         );
-        Round round = new Round("appel", 5, 1, history, RoundOutcome.IN_PROGRESS, hint);
+        Round round = new Round("bruhh", 5, 1, history, RoundOutcome.IN_PROGRESS, hint);
 
         RoundResponse response = GameMapper.toRoundResponse(round);
 
@@ -92,24 +92,23 @@ class GameMapperTest {
     @Test
     @DisplayName("Maps completed round with revealed target word")
     void mapsCompletedRoundWithTargetWord() {
-        Hint hint = Hint.initialFor("appel");
+        Hint hint = Hint.initialFor("bruhh");
         List<Feedback> history = List.of(
-            Feedback.correct("appel")
+            Feedback.correct("bruhh")
         );
-        Round round = new Round("appel", 5, 1, history, RoundOutcome.WON, hint);
-
+        Round round = new Round("bruhh", 5, 1, history, RoundOutcome.WON, hint);
         RoundResponse response = GameMapper.toRoundResponse(round);
 
         assertNotNull(response);
         assertEquals(RoundOutcome.WON, response.outcome());
-        assertEquals("appel", response.targetWord());
+        assertEquals("bruhh", response.targetWord());
     }
 
     @Test
     @DisplayName("Maps round with empty history correctly")
     void mapsRoundWithEmptyHistory() {
-        Hint hint = Hint.initialFor("appel");
-        Round round = new Round("appel", 5, 0, new ArrayList<>(), RoundOutcome.IN_PROGRESS, hint);
+        Hint hint = Hint.initialFor("bruhh");
+        Round round = new Round("bruhh", 5, 0, new ArrayList<>(), RoundOutcome.IN_PROGRESS, hint);
 
         RoundResponse response = GameMapper.toRoundResponse(round);
 
@@ -138,7 +137,7 @@ class GameMapperTest {
         List<Feedback> feedbackList = List.of(
             Feedback.of("wrong", List.of(Mark.ABSENT, Mark.CORRECT, Mark.ABSENT, Mark.ABSENT, Mark.ABSENT)),
             Feedback.of("close", List.of(Mark.PRESENT, Mark.CORRECT, Mark.ABSENT, Mark.ABSENT, Mark.CORRECT)),
-            Feedback.correct("appel")
+            Feedback.correct("bruhh")
         );
 
         List<AttemptResponse> responses = GameMapper.toAttemptResponseList(feedbackList);
@@ -147,7 +146,7 @@ class GameMapperTest {
         assertEquals(3, responses.size());
         assertEquals("wrong", responses.get(0).attempt());
         assertEquals("close", responses.get(1).attempt());
-        assertEquals("appel", responses.get(2).attempt());
+        assertEquals("bruhh", responses.get(2).attempt());
     }
 
     @Test
@@ -165,7 +164,7 @@ class GameMapperTest {
     @DisplayName("Maps valid feedback to feedback response")
     void mapsValidFeedbackToFeedbackResponse() {
         List<Mark> marks = List.of(Mark.CORRECT, Mark.CORRECT, Mark.CORRECT, Mark.CORRECT, Mark.CORRECT);
-        Feedback feedback = Feedback.of("appel", marks);
+        Feedback feedback = Feedback.of("bruhh", marks);
 
         FeedbackResponse response = GameMapper.toFeedbackResponse(feedback);
 
@@ -206,8 +205,8 @@ class GameMapperTest {
     @DisplayName("Maps guess response with winning feedback")
     void mapsGuessResponseWithWinningFeedback() {
         UUID gameId = UUID.randomUUID();
-        Feedback feedback = Feedback.correct("appel");
-        Game game = new Game(gameId, 25, GameState.WAITING_FOR_ROUND, null, new ArrayList<>(), 5);
+        Feedback feedback = Feedback.correct("bruhh");
+        Game game = new Game(gameId, "BeetleJuice", 25, GameState.WAITING_FOR_ROUND, null, new ArrayList<>(), 5);
 
         GuessResponse response = GameMapper.toGuessResponse(feedback, game);
 
@@ -222,10 +221,10 @@ class GameMapperTest {
     @DisplayName("Maps guess response with invalid feedback")
     void mapsGuessResponseWithInvalidFeedback() {
         UUID gameId = UUID.randomUUID();
-        Hint hint = Hint.initialFor("appel");
-        Round round = new Round("appel", 5, 1, new ArrayList<>(), RoundOutcome.IN_PROGRESS, hint);
+        Hint hint = Hint.initialFor("bruhh");
+        Round round = new Round("bruhh", 5, 1, new ArrayList<>(), RoundOutcome.IN_PROGRESS, hint);
         Feedback feedback = Feedback.invalid("zzzzz");
-        Game game = new Game(gameId, 0, GameState.IN_ROUND, round, new ArrayList<>(), 5);
+        Game game = new Game(gameId, "BeetleJuice", 0, GameState.IN_ROUND, round, new ArrayList<>(), 5);
 
         GuessResponse response = GameMapper.toGuessResponse(feedback, game);
 
@@ -240,11 +239,11 @@ class GameMapperTest {
     @DisplayName("Maps guess response with partial match feedback")
     void mapsGuessResponseWithPartialMatch() {
         UUID gameId = UUID.randomUUID();
-        Hint hint = Hint.initialFor("appel");
-        Round round = new Round("appel", 5, 1, new ArrayList<>(), RoundOutcome.IN_PROGRESS, hint);
+        Hint hint = Hint.initialFor("bruhh");
+        Round round = new Round("bruhh", 5, 1, new ArrayList<>(), RoundOutcome.IN_PROGRESS, hint);
         List<Mark> marks = List.of(Mark.CORRECT, Mark.ABSENT, Mark.ABSENT, Mark.PRESENT, Mark.ABSENT);
         Feedback feedback = Feedback.of("axpel", marks);
-        Game game = new Game(gameId, 0, GameState.IN_ROUND, round, new ArrayList<>(), 5);
+        Game game = new Game(gameId, "BeetleJuice", 0, GameState.IN_ROUND, round, new ArrayList<>(), 5);
 
         GuessResponse response = GameMapper.toGuessResponse(feedback, game);
 
