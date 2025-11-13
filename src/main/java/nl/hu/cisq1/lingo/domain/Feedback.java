@@ -34,7 +34,7 @@ public class Feedback {
         this.marks = marks;
     }
 
-    protected boolean isWordGuessed() {
+    public boolean isWordGuessed() {
         if (marks == null) {
             return false;
         }
@@ -46,7 +46,7 @@ public class Feedback {
         return true;
     }
 
-    protected boolean isGuessValid() {
+    public boolean isGuessValid() {
         if (marks == null) {
             return false;
         }

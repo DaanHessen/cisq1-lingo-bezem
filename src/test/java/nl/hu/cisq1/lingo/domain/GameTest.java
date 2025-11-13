@@ -33,9 +33,9 @@ class GameTest {
     @MethodSource("wordLengths")
     @DisplayName("Word length progresses correctly")
     void wordLengthProgressesCorrectly(int previous, int expected) {
-        Game game = new Game(null, 0, GameState.NEW, null, new ArrayList<>(), previous, TEST_DICTIONARY);
+        Game game = new Game(null, 0, GameState.NEW, null, new ArrayList<>(), previous);
 
-        game.startNewRound();
+        game.startNewRound(TEST_DICTIONARY);
 
         assertEquals(expected, game.getLastWordLength());
     }
@@ -52,9 +52,9 @@ class GameTest {
     @Test
     @DisplayName("Starting game initializes correctly")
     void startingGameInitializesCorrectly() {
-        Game game = new Game(null, 0, GameState.NEW, null, new ArrayList<>(), 0, TEST_DICTIONARY);
+        Game game = new Game(null, 0, GameState.NEW, null, new ArrayList<>(), 0);
 
-        game.startGame();
+        game.startGame(TEST_DICTIONARY);
 
         assertEquals(0, game.getScore());
         assertEquals(GameState.IN_ROUND, game.getState());
@@ -66,9 +66,9 @@ class GameTest {
     @MethodSource("invalidStates")
     @DisplayName("Cannot start new round in invalid states")
     void cannotStartNewRoundInInvalidStates(GameState state) {
-        Game game = new Game(null, 0, state, null, new ArrayList<>(), 0, TEST_DICTIONARY);
+        Game game = new Game(null, 0, state, null, new ArrayList<>(), 0);
 
-        assertThrows(InvalidActionException.class, () -> game.startNewRound());
+        assertThrows(InvalidActionException.class, () -> game.startNewRound(TEST_DICTIONARY));
     }
 
     static Stream<Arguments> invalidStates() {
@@ -82,9 +82,9 @@ class GameTest {
     @DisplayName("Correct guess wins round and updates state")
     void correctGuessWinsRoundAndUpdatesState() {
         Round round = new Round("bruhh", 5, 0, new ArrayList<>(), RoundOutcome.IN_PROGRESS, Hint.initialFor("bruhh"));
-        Game game = new Game(null, 0, GameState.IN_ROUND, round, new ArrayList<>(), 5, TEST_DICTIONARY);
+        Game game = new Game(null, 0, GameState.IN_ROUND, round, new ArrayList<>(), 5);
 
-        Feedback feedback = game.guess("bruhh");
+        Feedback feedback = game.guess("bruhh", TEST_DICTIONARY);
 
         assertTrue(feedback.isWordGuessed());
         assertEquals(GameState.WAITING_FOR_ROUND, game.getState());
@@ -96,9 +96,9 @@ class GameTest {
     @DisplayName("Score increases after winning round")
     void scoreIncreasesAfterWinningRound() {
         Round round = new Round("bruhh", 5, 0, new ArrayList<>(), RoundOutcome.IN_PROGRESS, Hint.initialFor("bruhh"));
-        Game game = new Game(null, 0, GameState.IN_ROUND, round, new ArrayList<>(), 5, TEST_DICTIONARY);
+        Game game = new Game(null, 0, GameState.IN_ROUND, round, new ArrayList<>(), 5);
 
-        game.guess("bruhh");
+        game.guess("bruhh", TEST_DICTIONARY);
 
         assertTrue(game.getScore() > 0);
     }
@@ -107,9 +107,9 @@ class GameTest {
     @DisplayName("Losing round eliminates player")
     void losingRoundEliminatesPlayer() {
         Round round = new Round("bruhh", 5, 4, new ArrayList<>(), RoundOutcome.IN_PROGRESS, Hint.initialFor("bruhh"));
-        Game game = new Game(null, 0, GameState.IN_ROUND, round, new ArrayList<>(), 5, TEST_DICTIONARY);
+        Game game = new Game(null, 0, GameState.IN_ROUND, round, new ArrayList<>(), 5);
 
-        game.guess("nopes");
+        game.guess("nopes", TEST_DICTIONARY);
 
         assertEquals(GameState.ELIMINATED, game.getState());
         assertNull(game.getCurrentRound());
@@ -119,16 +119,16 @@ class GameTest {
     @Test
     @DisplayName("Cannot guess when not in round")
     void cannotGuessWhenNotInRound() {
-        Game game = new Game(null, 0, GameState.NEW, null, new ArrayList<>(), 0, TEST_DICTIONARY);
+        Game game = new Game(null, 0, GameState.NEW, null, new ArrayList<>(), 0);
 
-        assertThrows(InvalidActionException.class, () -> game.guess("bruhh"));
+        assertThrows(InvalidActionException.class, () -> game.guess("bruhh", TEST_DICTIONARY));
     }
 
     @Test
     @DisplayName("Forfeit eliminates player")
     void forfeitEliminatesPlayer() {
         Round round = new Round("bruhh", 5, 2, new ArrayList<>(), RoundOutcome.IN_PROGRESS, Hint.initialFor("bruhh"));
-        Game game = new Game(null, 0, GameState.IN_ROUND, round, new ArrayList<>(), 5, TEST_DICTIONARY);
+        Game game = new Game(null, 0, GameState.IN_ROUND, round, new ArrayList<>(), 5);
 
         game.forfeit();
 
@@ -140,7 +140,7 @@ class GameTest {
     @Test
     @DisplayName("Cannot forfeit when not in round")
     void cannotForfeitWhenNotInRound() {
-        Game game = new Game(null, 0, GameState.NEW, null, new ArrayList<>(), 0, TEST_DICTIONARY);
+        Game game = new Game(null, 0, GameState.NEW, null, new ArrayList<>(), 0);
 
         assertThrows(InvalidActionException.class, () -> game.forfeit());
     }
@@ -150,7 +150,7 @@ class GameTest {
     void currentHintReturnedFromActiveRound() {
         Hint expectedHint = Hint.initialFor("bruhh");
         Round round = new Round("bruhh", 5, 0, new ArrayList<>(), RoundOutcome.IN_PROGRESS, expectedHint);
-        Game game = new Game(null, 0, GameState.IN_ROUND, round, new ArrayList<>(), 5, TEST_DICTIONARY);
+        Game game = new Game(null, 0, GameState.IN_ROUND, round, new ArrayList<>(), 5);
 
         Hint actualHint = game.getCurrentHint();
 
@@ -160,7 +160,7 @@ class GameTest {
     @Test
     @DisplayName("Cannot get hint when not in round")
     void cannotGetHintWhenNotInRound() {
-        Game game = new Game(null, 0, GameState.NEW, null, new ArrayList<>(), 0, TEST_DICTIONARY);
+        Game game = new Game(null, 0, GameState.NEW, null, new ArrayList<>(), 0);
 
         assertThrows(InvalidActionException.class, () -> game.getCurrentHint());
     }
@@ -169,7 +169,7 @@ class GameTest {
     @DisplayName("Attempts remaining is returned from active round")
     void attemptsRemainingReturnedFromActiveRound() {
         Round round = new Round("bruhh", 5, 2, new ArrayList<>(), RoundOutcome.IN_PROGRESS, Hint.initialFor("bruhh"));
-        Game game = new Game(null, 0, GameState.IN_ROUND, round, new ArrayList<>(), 5, TEST_DICTIONARY);
+        Game game = new Game(null, 0, GameState.IN_ROUND, round, new ArrayList<>(), 5);
 
         int remaining = game.getAttemptsRemaining();
 
@@ -179,7 +179,7 @@ class GameTest {
     @Test
     @DisplayName("Cannot get attempts when not in round")
     void cannotGetAttemptsWhenNotInRound() {
-        Game game = new Game(null, 0, GameState.NEW, null, new ArrayList<>(), 0, TEST_DICTIONARY);
+        Game game = new Game(null, 0, GameState.NEW, null, new ArrayList<>(), 0);
 
         assertThrows(InvalidActionException.class, () -> game.getAttemptsRemaining());
     }
@@ -188,9 +188,9 @@ class GameTest {
     @DisplayName("Past rounds are tracked correctly")
     void pastRoundsTrackedCorrectly() {
         Round round = new Round("bruhh", 5, 0, new ArrayList<>(), RoundOutcome.IN_PROGRESS, Hint.initialFor("bruhh"));
-        Game game = new Game(null, 0, GameState.IN_ROUND, round, new ArrayList<>(), 5, TEST_DICTIONARY);
+        Game game = new Game(null, 0, GameState.IN_ROUND, round, new ArrayList<>(), 5);
 
-        game.guess("bruhh");
+        game.guess("bruhh", TEST_DICTIONARY);
 
         assertEquals(1, game.getPastRounds().size());
     }
@@ -199,10 +199,10 @@ class GameTest {
     @DisplayName("Can start new round after winning")
     void canStartNewRoundAfterWinning() {
         Round round = new Round("bruhh", 5, 0, new ArrayList<>(), RoundOutcome.IN_PROGRESS, Hint.initialFor("bruhh"));
-        Game game = new Game(null, 0, GameState.IN_ROUND, round, new ArrayList<>(), 5, TEST_DICTIONARY);
+        Game game = new Game(null, 0, GameState.IN_ROUND, round, new ArrayList<>(), 5);
 
-        game.guess("bruhh");
-        game.startNewRound();
+        game.guess("bruhh", TEST_DICTIONARY);
+        game.startNewRound(TEST_DICTIONARY);
 
         assertEquals(GameState.IN_ROUND, game.getState());
         assertNotNull(game.getCurrentRound());
