@@ -16,7 +16,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.*;
@@ -45,11 +44,8 @@ public class Game {
     private List<Round> pastRounds;
 
     private int lastWordLength;
-    
-    @Transient
-    private Dictionary dict;
 
-    protected void startGame() {
+    public void startGame(Dictionary dictionary) {
         if (this.state != GameState.NEW) {
             throw new InvalidActionException("game already started");
         } 
@@ -60,10 +56,10 @@ public class Game {
         this.pastRounds = new ArrayList<>();
 
         log.info("started a new game");
-        this.startNewRound();
+        this.startNewRound(dictionary);
     }
 
-    protected void startNewRound() {
+    public void startNewRound(Dictionary dictionary) {
         if (this.state == GameState.ELIMINATED) {
             throw new InvalidActionException("cannot start round, game is over");
         }
@@ -80,7 +76,7 @@ public class Game {
             default -> throw new IllegalStateException("🤨🤨 " + this.lastWordLength + " isn't a valid length");
         };
 
-        String target = dict.randomWord(nextWordLength);
+        String target = dictionary.randomWord(nextWordLength);
         List<Feedback> history = new ArrayList<>();
         Hint hint = Hint.initialFor(target);
 
@@ -91,12 +87,12 @@ public class Game {
         this.lastWordLength = nextWordLength;
     }
 
-    protected Feedback guess(String attempt) {
+    public Feedback guess(String attempt, Dictionary dictionary) {
         if (this.state != GameState.IN_ROUND) {
             throw new InvalidActionException("no active round");
         }
 
-        Feedback feedback = currentRound.guess(attempt, dict);
+        Feedback feedback = currentRound.guess(attempt, dictionary);
 
         if (currentRound.getOutcome() == RoundOutcome.WON) {
             this.score = score + (5 * (currentRound.getAttemptsRemaining() + 1));
@@ -112,7 +108,7 @@ public class Game {
         return feedback;
     }
 
-    protected void forfeit() {
+    public void forfeit() {
         if (this.state != GameState.IN_ROUND) {
             throw new InvalidActionException("cannot forfeit when not in round");
         }
@@ -120,10 +116,6 @@ public class Game {
         this.pastRounds.add(currentRound);
         this.currentRound = null;
         this.state = GameState.ELIMINATED;
-    }
-
-    protected int getScore() {
-        return score;
     }
 
     protected Hint getCurrentHint() {

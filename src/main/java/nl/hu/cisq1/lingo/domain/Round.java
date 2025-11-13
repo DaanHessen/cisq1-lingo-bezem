@@ -4,6 +4,7 @@ import nl.hu.cisq1.lingo.domain.enums.RoundOutcome;
 import nl.hu.cisq1.lingo.domain.exceptions.InvalidActionException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -84,16 +85,18 @@ public class Round {
         return (outcome != RoundOutcome.IN_PROGRESS);
     }
 
-    protected int getAttemptsRemaining() {
+    public int getAttemptsRemaining() {
         return maxAttempts - attemptsUsed;
     }
 
-    protected Hint getCurrentHint() {
+    public Hint getCurrentHint() {
         return currentHint;
     }
 
-    protected String revealAnswer() {
-        return targetWord;
+    public Optional<String> getTargetWord() {
+        return outcome == RoundOutcome.IN_PROGRESS 
+            ? Optional.empty() 
+            : Optional.of(targetWord);
     }
 }
 
