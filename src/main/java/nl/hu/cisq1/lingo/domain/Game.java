@@ -35,7 +35,7 @@ public class Game {
     private UUID id;
 
     private int score;
-    private GameState state;
+    private GameState state = GameState.NEW;
 
     @OneToOne(cascade = CascadeType.ALL)
     private Round currentRound;
