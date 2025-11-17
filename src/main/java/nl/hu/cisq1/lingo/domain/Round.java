@@ -10,8 +10,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,6 +33,9 @@ public class Round {
     private String targetWord;
     private int maxAttempts;
     private int attemptsUsed;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private RoundOutcome outcome;
 
     public Round(String targetWord, int maxAttempts, int attemptsUsed, List<Feedback> history, RoundOutcome outcome, Hint currentHint) {

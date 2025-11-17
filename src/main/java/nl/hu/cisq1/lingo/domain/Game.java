@@ -12,6 +12,8 @@ import java.util.Random;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -38,6 +40,9 @@ public class Game {
 
     private String username;
     private int score;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private GameState state = GameState.NEW;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -48,7 +53,7 @@ public class Game {
 
     private int lastWordLength;
     
-    @Column(columnDefinition = "boolean default false")
+    @Column(nullable = false)
     private boolean randomLength = false;
 
     public void setUsername(String username) {

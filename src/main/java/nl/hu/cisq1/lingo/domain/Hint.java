@@ -2,6 +2,7 @@ package nl.hu.cisq1.lingo.domain;
 
 import java.util.List;
 import nl.hu.cisq1.lingo.domain.enums.Mark;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Hint {
+    @Column(name = "hint_value")
     private String value;
 
     public static Hint initialFor(String word) {
