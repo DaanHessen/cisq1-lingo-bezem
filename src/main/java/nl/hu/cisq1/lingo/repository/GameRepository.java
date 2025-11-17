@@ -6,5 +6,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface GameRepository extends JpaRepository<Game, UUID> {
-    List<Game> findTop10ByOrderByScoreDesc();
+    List<Game> findTop20ByOrderByScoreDesc();
 }

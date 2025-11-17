@@ -25,8 +25,14 @@ public class GameService {
 
     @Transactional
     public GameResponse startNewGame(String username) {
+        return startNewGame(username, false);
+    }
+
+    @Transactional
+    public GameResponse startNewGame(String username, boolean randomLength) {
         Game game = new Game();
         game.setUsername(username);
+        game.setRandomLength(randomLength);
         game.startGame(dictionaryService);
 
         game = gameRepository.save(game);
@@ -77,9 +83,13 @@ public class GameService {
 
     @Transactional(readOnly = true)
     public List<ScoreboardEntry> getScoreboard() {
-        return gameRepository.findTop10ByOrderByScoreDesc()
+        return gameRepository.findTop20ByOrderByScoreDesc()
             .stream()
-            .map(game -> new ScoreboardEntry(game.getUsername(), game.getScore()))
+            .map(game -> new ScoreboardEntry(
+                game.getUsername(), 
+                game.getScore(),
+                game.isRandomLength() ? "Random" : "Sequential"
+            ))
             .toList();
     }
 

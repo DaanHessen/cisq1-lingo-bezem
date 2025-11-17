@@ -46,9 +46,14 @@ public class Game {
     private List<Round> pastRounds;
 
     private int lastWordLength;
+    private boolean randomLength;
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public void setRandomLength(boolean randomLength) {
+        this.randomLength = randomLength;
     }
 
     public void startGame(Dictionary dictionary) {
@@ -66,7 +71,7 @@ public class Game {
     }
 
     public void startNewRound(Dictionary dictionary) {
-        startNewRound(dictionary, false);
+        startNewRound(dictionary, this.randomLength);
     }
 
     public void startNewRound(Dictionary dictionary, boolean randomLength) {

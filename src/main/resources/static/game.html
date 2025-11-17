@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINGO TRAINER - PLAYING ROUND</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            padding: 15px;
+            overflow: hidden;
+        }
+        .main-container {
+            display: flex;
+            gap: 15px;
+            max-width: 1600px;
+            margin: 0 auto;
+            height: calc(100vh - 30px);
+        }
+        .game-section {
+            flex: 1;
+            background: #16213e;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 250px;
+            background: #16213e;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        h1 {
+            color: #e94560;
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+        }
+        .status-bar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 12px;
+            background: #0f3460;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .status-item {
+            text-align: center;
+        }
+        .status-label {
+            font-size: 10px;
+            color: #a0a0a0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .status-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #e0e0e0;
+            margin-top: 2px;
+        }
+        .game-state {
+            padding: 8px 16px;
+            border-radius: 6px;
+            display: inline-block;
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+        .state-NEW { background: #0f3460; color: #e0e0e0; }
+        .state-IN_ROUND { background: #0f3460; color: #e0e0e0; }
+        .state-WAITING_FOR_ROUND { background: #f39c12; color: #1a1a2e; }
+        .state-ELIMINATED { background: #e94560; color: white; }
+        .hint {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 12px;
+            text-align: center;
+            color: #e0e0e0;
+            padding: 15px;
+            background: #0f3460;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+        }
+        .attempts-grid {
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+        .attempt-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+            justify-content: center;
+        }
+        .letter-box {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 700;
+            border-radius: 6px;
+            text-transform: uppercase;
+            font-family: 'Courier New', monospace;
+        }
+        .mark-CORRECT { background: #0f3460; color: #e0e0e0; border: 2px solid #0f3460; }
+        .mark-PRESENT { background: #f39c12; color: #1a1a2e; border: 2px solid #f39c12; }
+        .mark-ABSENT { background: #2d3436; color: #636e72; border: 2px solid #2d3436; }
+        .mark-INVALID { background: #e94560; color: white; border: 2px solid #e94560; }
+        .mark-empty { background: transparent; color: #636e72; border: 2px dashed #0f3460; }
+        .guess-section {
+            margin-top: auto;
+            flex-shrink: 0;
+        }
+        .guess-input-wrapper {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #0f3460;
+            border-radius: 8px;
+            font-size: 16px;
+            text-transform: uppercase;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 4px;
+            background: #0f3460;
+            color: #e0e0e0;
+        }
+        input:focus {
+            outline: none;
+            border-color: #e94560;
+        }
+        button {
+            padding: 12px 24px;
+            background: #e94560;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        button:hover:not(:disabled) {
+            background: #d63651;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(233, 69, 96, 0.3);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-secondary {
+            background: #2d3436;
+            flex: 1;
+        }
+        .btn-secondary:hover:not(:disabled) {
+            background: #1e2022;
+        }
+        .btn-primary {
+            background: #0f3460;
+            flex: 1;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: #0a2340;
+        }
+        .message {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .message-success { background: #0f3460; color: #e0e0e0; }
+        .message-error { background: #e94560; color: white; }
+        .message-info { background: #2d3436; color: #e0e0e0; }
+        h2 {
+            color: #e94560;
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+        }
+        .scoreboard-list {
+            list-style: none;
+            flex: 1;
+            overflow-y: auto;
+        }
+        .scoreboard-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scoreboard-list::-webkit-scrollbar-track {
+            background: #0f3460;
+            border-radius: 3px;
+        }
+        .scoreboard-list::-webkit-scrollbar-thumb {
+            background: #e94560;
+            border-radius: 3px;
+        }
+        .scoreboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 10px;
+            background: #0f3460;
+            border-radius: 6px;
+            margin-bottom: 3px;
+            font-size: 12px;
+        }
+        .scoreboard-item:hover {
+            background: #1a4d7a;
+        }
+        .scoreboard-item.empty {
+            opacity: 0.3;
+        }
+        .rank {
+            color: #e94560;
+            font-weight: 700;
+            margin-right: 8px;
+            min-width: 30px;
+        }
+        .username {
+            flex: 1;
+            color: #e0e0e0;
+        }
+        .mode {
+            color: #a0a0a0;
+            font-size: 10px;
+            margin-right: 8px;
+            min-width: 55px;
+            text-align: center;
+        }
+        .score {
+            color: #a0a0a0;
+            font-weight: 600;
+            min-width: 35px;
+            text-align: right;
+        }
+        .round-outcome {
+            margin: 12px 0;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .outcome-WON { background: #0f3460; color: #e0e0e0; }
+        .outcome-LOST { background: #e94560; color: white; }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 12px;
+            color: #e94560;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 968px) {
+            .main-container {
+                flex-direction: column;
+                height: auto;
+            }
+            .sidebar {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="game-section">
+            <a href="index.html" class="back-link">⇠ Back to Home</a>
+            <h1>LINGO TRAINER</h1>
+            
+            <div id="message"></div>
+            
+            <div class="status-bar">
+                <div class="status-item">
+                    <div class="status-label">Score</div>
+                    <div class="status-value" id="score">0</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Attempts</div>
+                    <div class="status-value" id="attempts">0/5</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Word Length</div>
+                    <div class="status-value" id="wordLength">-</div>
+                </div>
+            </div>
+
+            <div id="gameState" class="game-state"></div>
+            <div id="roundOutcome"></div>
+
+            <div id="hint" class="hint">_ _ _ _ _</div>
+
+            <div id="attemptsGrid" class="attempts-grid"></div>
+
+            <div class="guess-section">
+                <div class="guess-input-wrapper">
+                    <input type="text" id="guessInput" placeholder="Enter your guess" maxlength="10" autocomplete="off" />
+                    <button id="guessBtn" onclick="makeGuess()">Guess</button>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn-secondary" onclick="window.location.href='index.html'">Quit</button>
+                    <button id="newRoundBtn" class="btn-primary" onclick="startNewRound()" style="display:none;">New Round</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <h2>LEADERBOARD</h2>
+            <div id="scoreboard" style="flex: 1; display: flex; flex-direction: column;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let gameId = null;
+        let currentGame = null;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        gameId = urlParams.get('id');
+
+        if (!gameId) {
+            window.location.href = 'index.html';
+        }
+
+        loadGame();
+        loadScoreboard();
+        setInterval(loadScoreboard, 5000);
+
+        async function loadGame() {
+            try {
+                const response = await fetch(`${API_BASE}/games/${gameId}`);
+                if (!response.ok) {
+                    throw new Error('Game not found');
+                }
+                currentGame = await response.json();
+                updateUI();
+            } catch (error) {
+                console.error('Error loading game:', error);
+                showMessage('Failed to load game', 'error');
+            }
+        }
+
+        async function loadScoreboard() {
+            try {
+                const response = await fetch(`${API_BASE}/games/scoreboard`);
+                const scoreboard = await response.json();
+                
+                const scoreboardEl = document.getElementById('scoreboard');
+                const list = document.createElement('ul');
+                list.className = 'scoreboard-list';
+                
+                // Always show exactly 20 entries
+                for (let i = 0; i < 20; i++) {
+                    const item = document.createElement('li');
+                    if (i < scoreboard.length) {
+                        item.className = 'scoreboard-item';
+                        item.innerHTML = `
+                            <span class="rank">#${i + 1}</span>
+                            <span class="username">${escapeHtml(scoreboard[i].username)}</span>
+                            <span class="mode">${scoreboard[i].mode}</span>
+                            <span class="score">${scoreboard[i].score}</span>
+                        `;
+                    } else {
+                        item.className = 'scoreboard-item empty';
+                        item.innerHTML = `
+                            <span class="rank">#${i + 1}</span>
+                            <span class="username">---</span>
+                            <span class="mode">---</span>
+                            <span class="score">0</span>
+                        `;
+                    }
+                    list.appendChild(item);
+                }
+                
+                scoreboardEl.innerHTML = '';
+                scoreboardEl.appendChild(list);
+            } catch (error) {
+                console.error('Error loading scoreboard:', error);
+            }
+        }
+
+        function updateUI() {
+            if (!currentGame) return;
+
+            document.getElementById('score').textContent = currentGame.score;
+            document.getElementById('wordLength').textContent = currentGame.lastWordLength || '-';
+            
+            const stateEl = document.getElementById('gameState');
+            stateEl.textContent = currentGame.state.replace('_', ' ');
+            stateEl.className = `game-state state-${currentGame.state}`;
+
+            const round = currentGame.currentRound;
+            if (round) {
+                document.getElementById('attempts').textContent = 
+                    `${round.maxAttempts - round.attemptsRemaining}/${round.maxAttempts}`;
+                
+                document.getElementById('hint').textContent = 
+                    round.hint.split('').join(' ').toUpperCase();
+
+                displayAttempts(round.attempts, round.hint.length);
+
+                const outcomeEl = document.getElementById('roundOutcome');
+                if (round.outcome === 'WON') {
+                    outcomeEl.innerHTML = '<div class="round-outcome outcome-WON">🎉 Round Won! Target word: ' + 
+                        round.targetWord.toUpperCase() + '</div>';
+                } else if (round.outcome === 'LOST') {
+                    outcomeEl.innerHTML = '<div class="round-outcome outcome-LOST">😔 Round Lost! Target word was: ' + 
+                        round.targetWord.toUpperCase() + '</div>';
+                } else {
+                    outcomeEl.innerHTML = '';
+                }
+            }
+
+            const guessBtn = document.getElementById('guessBtn');
+            const guessInput = document.getElementById('guessInput');
+            const newRoundBtn = document.getElementById('newRoundBtn');
+
+            if (currentGame.state === 'WAITING_FOR_ROUND') {
+                guessBtn.style.display = 'none';
+                guessInput.disabled = true;
+                newRoundBtn.style.display = 'block';
+            } else if (currentGame.state === 'ELIMINATED') {
+                guessBtn.disabled = true;
+                guessInput.disabled = true;
+                newRoundBtn.style.display = 'none';
+                showMessage('Game Over! Final score: ' + currentGame.score, 'info');
+            } else if (currentGame.state === 'IN_ROUND') {
+                guessBtn.style.display = 'inline-block';
+                guessBtn.disabled = false;
+                guessInput.disabled = false;
+                newRoundBtn.style.display = 'none';
+            }
+        }
+
+        function displayAttempts(attempts, wordLength) {
+            const grid = document.getElementById('attemptsGrid');
+            grid.innerHTML = '';
+
+            if (!attempts || attempts.length === 0) return;
+
+            attempts.forEach(attempt => {
+                const row = document.createElement('div');
+                row.className = 'attempt-row';
+
+                for (let i = 0; i < attempt.attempt.length; i++) {
+                    const box = document.createElement('div');
+                    box.className = `letter-box mark-${attempt.marks[i]}`;
+                    box.textContent = attempt.attempt[i].toUpperCase();
+                    row.appendChild(box);
+                }
+
+                grid.appendChild(row);
+            });
+        }
+
+        async function makeGuess() {
+            const guess = document.getElementById('guessInput').value.trim().toLowerCase();
+            
+            if (!guess) {
+                showMessage('Please enter a guess', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/games/${gameId}/guess`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ attempt: guess })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Invalid guess');
+                }
+
+                const result = await response.json();
+                currentGame = result.gameState;
+                
+                document.getElementById('guessInput').value = '';
+                updateUI();
+
+                if (!result.feedback.valid) {
+                    showMessage('Invalid word. Try again!', 'error');
+                }
+
+            } catch (error) {
+                console.error('Error making guess:', error);
+                showMessage(error.message || 'Failed to make guess', 'error');
+            }
+        }
+
+        async function startNewRound() {
+            try {
+                const response = await fetch(`${API_BASE}/games/${gameId}/rounds`, {
+                    method: 'POST'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to start new round');
+                }
+
+                currentGame = await response.json();
+                updateUI();
+
+            } catch (error) {
+                console.error('Error starting new round:', error);
+                showMessage('Failed to start new round', 'error');
+            }
+        }
+
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.innerHTML = `<div class="message message-${type}">${text}</div>`;
+            setTimeout(() => {
+                messageEl.innerHTML = '';
+            }, 3000);
+        }
+
+        document.getElementById('guessInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                makeGuess();
+            }
+        });
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

@@ -32,7 +32,8 @@ public class GameController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public GameResponse startGame(@RequestBody StartGameRequest request) {
-        return service.startNewGame(request.username());
+        boolean randomLength = request.randomLength() != null ? request.randomLength() : false;
+        return service.startNewGame(request.username(), randomLength);
     }
 
     @GetMapping("/{gameId}")

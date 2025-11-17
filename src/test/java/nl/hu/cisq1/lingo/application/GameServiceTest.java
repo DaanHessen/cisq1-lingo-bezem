@@ -209,13 +209,13 @@ class GameServiceTest {
     private Game activeGame(UUID id, String targetWord) {
         Round round = new Round(targetWord, 5, 0, new ArrayList<>(), RoundOutcome.IN_PROGRESS, Hint.initialFor(targetWord));
         List<Round> pastRounds = new ArrayList<>();
-        return new Game(id, "JoeRogan", 0, GameState.IN_ROUND, round, pastRounds, targetWord.length());
+        return new Game(id, "JoeRogan", 0, GameState.IN_ROUND, round, pastRounds, targetWord.length(), false);
     }
 
     private Game waitingGame(UUID id, int score, int lastWordLength) {
         Round finishedRound = new Round(WORD_5, 5, 1, new ArrayList<>(), RoundOutcome.WON, Hint.initialFor(WORD_5));
         List<Round> pastRounds = new ArrayList<>();
         pastRounds.add(finishedRound);
-        return new Game(id, "JoeRogan", score, GameState.WAITING_FOR_ROUND, null, pastRounds, lastWordLength);
+        return new Game(id, "JoeRogan", score, GameState.WAITING_FOR_ROUND, null, pastRounds, lastWordLength, false);
     }
 }
