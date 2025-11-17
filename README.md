@@ -93,9 +93,13 @@ Train your guessing abilities! You can choose between playing a `sequential` or 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+
+
 ## <a id="readme-tests"></a> Tests
 
-The project has extensive test coverage through both `UNIT` and `INTEGRATION` tests. All core domain logic (game mechanics, feedback generation, hints), application services, and REST controllers are tested. Coverage is tracked using `JaCoCo`:
+The project has extensive test coverage through both `UNIT` and `INTEGRATION` tests. All core domain logic (game mechanics, feedback generation, hints), application services, and REST controllers are tested.
+
+### Code Coverage (JaCoCo)
 
 - **96%** instruction coverage (1,357 of 1,404)
 - **92%** branch coverage (84 of 91)
@@ -112,7 +116,23 @@ make coverage
 
 The report will be available at `target/site/jacoco/index.html`.
 
+### Mutation Coverage (PiTest)
+
+- **94%** mutation test strength (131 of 139 mutations killed)
+- **90%** total mutations killed (131 of 145 generated)
+- **97%** line coverage for mutated classes (279 of 288)
+
+Run mutation testing and generate a mutation report:
+
+```sh
+make mutation
+```
+
+The report will be available at `target/pit-reports/index.html`.
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
 
 ## License
 
