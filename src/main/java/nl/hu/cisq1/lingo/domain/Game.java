@@ -61,7 +61,7 @@ public class Game {
         this.lastWordLength = 0;
         this.pastRounds = new ArrayList<>();
 
-        log.info("started a new game");
+        log.info("started a new game for player: " + this.username);
         this.startNewRound(dictionary);
     }
 
