@@ -1,4 +1,4 @@
-<br />
+<a id="readme-top"></a>
 <div align="center">
   <h3 align="center">Lingo Trainer (CISQ-1)</h3>
 
@@ -36,7 +36,7 @@
 
 ![Lingo Trainer][product-screenshot]
 
-For the course `Continuous Integration and Software Quality 1` we were tasked to create a trainer for a popular Dutch game show called `Lingo`. The project itself had to be written in `Java`, using `SpringBoot`. The main focus of the course wasn't writing the trainer itself; focus was on the testing of the written code.
+For the course `Continuous Integration and Software Quality 1` we were tasked to create a trainer for a popular game show called `Lingo`. The main focus of the course wasn't just writing the trainer itself; instead, we needed to create a CI pipeline using GitHub Workflows, and write extensive `UNIT` and `INTEGRATION` tests. More about this <a href="#readme-tests">here</a>.
 
 `Lingo` is a fast-paced word-guessing game show in which two teams compete to guess words based on a single reveiled letter. Whenever a team correctly guesses a word, they may draw two balls from their ball-basin. The basins contain numbered balls, including the infamous `red` and `green` balls. When three green balls are drawn, the running jackpot is won. A red ball immediately ends a team's draw and hands it over to the opposing team. When a team completes a full row, column or diagonal on their card, they win the jackpot. 
 
@@ -93,6 +93,27 @@ Train your guessing abilities! You can choose between playing a `sequential` or 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## <a id="readme-tests"></a> Tests
+
+The project has extensive test coverage through both `UNIT` and `INTEGRATION` tests. All core domain logic (game mechanics, feedback generation, hints), application services, and REST controllers are tested. Coverage is tracked using `JaCoCo`:
+
+- **96%** instruction coverage (1,357 of 1,404)
+- **92%** branch coverage (84 of 91)
+- **93%** complexity coverage (151 of 163)
+- **97%** line coverage (311 of 320)
+- **96%** method coverage (111 of 116)
+- **100%** class coverage (29 of 29)
+
+Run the test suite and generate a coverage report:
+
+```sh
+make coverage
+```
+
+The report will be available at `target/site/jacoco/index.html`.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
@@ -104,3 +125,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 [spring-url]: https://spring.io/projects/spring-boot
 [maven-shield]: https://img.shields.io/badge/Maven-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white
 [maven-url]: https://maven.apache.org/
+
