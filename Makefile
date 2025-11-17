@@ -1,4 +1,4 @@
-.PHONY: test test-ci coverage clean-db
+.PHONY: test test-ci coverage mutation clean-db
 
 test:
 	mvn verify
@@ -9,6 +9,10 @@ test-ci:
 coverage:
 	mvn clean test jacoco:report
 	@echo "Report generated at: target/site/jacoco/index.html"
+
+mutation:
+	mvn test-compile org.pitest:pitest-maven:mutationCoverage
+	@echo "Report generated at: target/pit-reports/index.html"
 
 clean-db:
 	@echo "Cleaning database..."
