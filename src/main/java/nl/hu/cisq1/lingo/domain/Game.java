@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.Random;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -46,7 +47,9 @@ public class Game {
     private List<Round> pastRounds;
 
     private int lastWordLength;
-    private boolean randomLength;
+    
+    @Column(columnDefinition = "boolean default false")
+    private boolean randomLength = false;
 
     public void setUsername(String username) {
         this.username = username;
