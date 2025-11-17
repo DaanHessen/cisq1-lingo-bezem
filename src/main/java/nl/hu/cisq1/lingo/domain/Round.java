@@ -4,13 +4,17 @@ import nl.hu.cisq1.lingo.domain.enums.RoundOutcome;
 import nl.hu.cisq1.lingo.domain.exceptions.InvalidActionException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,6 +33,9 @@ public class Round {
     private String targetWord;
     private int maxAttempts;
     private int attemptsUsed;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private RoundOutcome outcome;
 
     public Round(String targetWord, int maxAttempts, int attemptsUsed, List<Feedback> history, RoundOutcome outcome, Hint currentHint) {
@@ -49,7 +56,7 @@ public class Round {
 
     protected Feedback guess(String attempt, Dictionary dict) {
         if (isOver()) {
-            throw new InvalidActionException("🤔cannot guess after round is over!");
+            throw new InvalidActionException("round is already over");
         }
 
         Feedback feedback = Feedback.generate(targetWord, attempt, dict);
@@ -84,16 +91,18 @@ public class Round {
         return (outcome != RoundOutcome.IN_PROGRESS);
     }
 
-    protected int getAttemptsRemaining() {
+    public int getAttemptsRemaining() {
         return maxAttempts - attemptsUsed;
     }
 
-    protected Hint getCurrentHint() {
+    public Hint getCurrentHint() {
         return currentHint;
     }
 
-    protected String revealAnswer() {
-        return targetWord;
+    public Optional<String> getTargetWord() {
+        return outcome == RoundOutcome.IN_PROGRESS 
+            ? Optional.empty() 
+            : Optional.of(targetWord);
     }
 }
 

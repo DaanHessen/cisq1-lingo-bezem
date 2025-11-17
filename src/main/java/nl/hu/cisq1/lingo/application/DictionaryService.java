@@ -1,8 +1,11 @@
 package nl.hu.cisq1.lingo.application;
 
+import org.springframework.stereotype.Service;
+
 import nl.hu.cisq1.lingo.domain.Dictionary; 
 import nl.hu.cisq1.lingo.words.application.WordService;
 
+@Service
 public class DictionaryService implements Dictionary {
     private final WordService wordService;
 

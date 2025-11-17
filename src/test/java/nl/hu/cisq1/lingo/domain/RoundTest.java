@@ -95,8 +95,24 @@ class RoundTest {
     }
 
     @Test
-    @DisplayName("Target word is revealed correctly")
+    @DisplayName("Target word is revealed correctly when round is over")
     void targetWordRevealedCorrectly() {
+        Round round = new Round(
+            UUID.randomUUID(),
+            "bruhh",
+            5,
+            0,
+            RoundOutcome.WON,
+            new ArrayList<>(),
+            Hint.initialFor("bruhh")
+        );
+
+        assertEquals("bruhh", round.getTargetWord().orElse(null));
+    }
+    
+    @Test
+    @DisplayName("Target word is hidden when round is in progress")
+    void targetWordHiddenDuringProgress() {
         Round round = new Round(
             UUID.randomUUID(),
             "bruhh",
@@ -107,7 +123,7 @@ class RoundTest {
             Hint.initialFor("bruhh")
         );
 
-        assertEquals("bruhh", round.revealAnswer());
+        assertNull(round.getTargetWord().orElse(null));
     }
 
     @Test

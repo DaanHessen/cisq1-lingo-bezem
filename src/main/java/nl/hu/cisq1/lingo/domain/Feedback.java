@@ -8,6 +8,8 @@ import java.util.UUID;
 
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,6 +29,7 @@ public class Feedback {
     private String attempt;
     
     @ElementCollection
+    @Enumerated(EnumType.STRING)
     private List<Mark> marks;
 
     private Feedback(String attempt, List<Mark> marks) {
@@ -34,7 +37,7 @@ public class Feedback {
         this.marks = marks;
     }
 
-    protected boolean isWordGuessed() {
+    public boolean isWordGuessed() {
         if (marks == null) {
             return false;
         }
@@ -46,7 +49,7 @@ public class Feedback {
         return true;
     }
 
-    protected boolean isGuessValid() {
+    public boolean isGuessValid() {
         if (marks == null) {
             return false;
         }

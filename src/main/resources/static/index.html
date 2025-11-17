@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lingo Trainer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+        .container {
+            background: #16213e;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            max-width: 1000px;
+            width: 100%;
+            max-height: calc(100vh - 40px);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+        .left-section {
+            display: flex;
+            flex-direction: column;
+        }
+        .right-section {
+            display: flex;
+            flex-direction: column;
+        }
+        h1 {
+            color: #e94560;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 2rem;
+            grid-column: 1 / -1;
+        }
+        .start-section {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            color: #e0e0e0;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #0f3460;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+            background: #0f3460;
+            color: #e0e0e0;
+        }
+        input:focus {
+            outline: none;
+            border-color: #e94560;
+        }
+        .mode-selector {
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+        .mode-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .mode-option {
+            flex: 1;
+            padding: 10px;
+            background: #0f3460;
+            border: 2px solid #0f3460;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            color: #e0e0e0;
+            font-size: 13px;
+        }
+        .mode-option:hover {
+            border-color: #e94560;
+        }
+        .mode-option.selected {
+            background: #e94560;
+            border-color: #e94560;
+            color: white;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #e94560;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 12px;
+        }
+        button:hover {
+            background: #d63651;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(233, 69, 96, 0.3);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .leaderboard {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        h2 {
+            color: #e94560;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        .scoreboard-list {
+            list-style: none;
+            flex: 1;
+            overflow: hidden;
+        }
+        .scoreboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #0f3460;
+            border-radius: 6px;
+            margin-bottom: 4px;
+            transition: background 0.2s;
+            font-size: 13px;
+        }
+        .scoreboard-item:hover {
+            background: #1a4d7a;
+        }
+        .scoreboard-item.empty {
+            opacity: 0.3;
+        }
+        .rank {
+            color: #e94560;
+            font-weight: 700;
+            margin-right: 12px;
+            min-width: 30px;
+        }
+        .username {
+            flex: 1;
+            color: #e0e0e0;
+        }
+        .mode {
+            color: #a0a0a0;
+            font-size: 11px;
+            margin-right: 12px;
+            min-width: 60px;
+            text-align: center;
+        }
+        .score {
+            color: #a0a0a0;
+            font-weight: 600;
+            min-width: 40px;
+            text-align: right;
+        }
+        .error {
+            color: #e94560;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+        .loading {
+            text-align: center;
+            color: #a0a0a0;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LINGO TRAINER</h1>
+        
+        <div class="start-section">
+            <label for="username">Enter your username</label>
+            <input type="text" id="username" placeholder="Your name" autocomplete="off" />
+            
+            <div class="mode-selector">
+                <label>Game Mode</label>
+                <div class="mode-options">
+                    <div class="mode-option selected" data-mode="sequential" onclick="selectMode('sequential')">
+                        <strong>Sequential</strong>
+                        <div style="font-size: 12px; margin-top: 4px;">5 ⇢ 6 ⇢ 7 ⇢ 5...</div>
+                    </div>
+                    <div class="mode-option" data-mode="random" onclick="selectMode('random')">
+                        <strong>Random</strong>
+                        <div style="font-size: 12px; margin-top: 4px;">5, 6, or 7 letters</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="error" class="error"></div>
+            <button onclick="startGame()">Start New Game</button>
+        </div>
+
+        <div class="leaderboard">
+            <h2>LEADERBOARD</h2>
+            <div id="scoreboard" class="loading">Loading...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let selectedMode = 'sequential';
+
+        loadScoreboard();
+
+        function selectMode(mode) {
+            selectedMode = mode;
+            document.querySelectorAll('.mode-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            document.querySelector(`[data-mode="${mode}"]`).classList.add('selected');
+        }
+
+        async function loadScoreboard() {
+            try {
+                const response = await fetch(`${API_BASE}/games/scoreboard`);
+                const scoreboard = await response.json();
+                
+                const scoreboardEl = document.getElementById('scoreboard');
+                const list = document.createElement('ul');
+                list.className = 'scoreboard-list';
+                
+                for (let i = 0; i < 20; i++) {
+                    const item = document.createElement('li');
+                    if (i < scoreboard.length) {
+                        item.className = 'scoreboard-item';
+                        item.innerHTML = `
+                            <span class="rank">#${i + 1}</span>
+                            <span class="username">${escapeHtml(scoreboard[i].username)}</span>
+                            <span class="mode">${scoreboard[i].mode}</span>
+                            <span class="score">${scoreboard[i].score}</span>
+                        `;
+                    } else {
+                        item.className = 'scoreboard-item empty';
+                        item.innerHTML = `
+                            <span class="rank">#${i + 1}</span>
+                            <span class="username">---</span>
+                            <span class="mode">---</span>
+                            <span class="score">0</span>
+                        `;
+                    }
+                    list.appendChild(item);
+                }
+                
+                scoreboardEl.innerHTML = '';
+                scoreboardEl.appendChild(list);
+            } catch (error) {
+                console.error('Error loading scoreboard:', error);
+                document.getElementById('scoreboard').innerHTML = '<p class="error">Failed to load scoreboard</p>';
+            }
+        }
+
+        async function startGame() {
+            const username = document.getElementById('username').value.trim();
+            const errorEl = document.getElementById('error');
+            
+            if (!username) {
+                errorEl.textContent = 'Please enter a username';
+                return;
+            }
+            
+            errorEl.textContent = '';
+            
+            try {
+                const response = await fetch(`${API_BASE}/games`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        username: username,
+                        randomLength: selectedMode === 'random'
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to start game');
+                }
+                
+                const game = await response.json();
+                window.location.href = `game.html?id=${game.id}`;
+            } catch (error) {
+                console.error('Error starting game:', error);
+                errorEl.textContent = 'Failed to start game. Please try again.';
+            }
+        }
+
+        document.getElementById('username').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                startGame();
+            }
+        });
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
